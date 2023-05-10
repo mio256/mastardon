@@ -1,3 +1,5 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 
-# Create your views here.
+
+def PingView(request):
+    return JsonResponse({'result': True})
