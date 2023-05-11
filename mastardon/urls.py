@@ -4,7 +4,7 @@ from page import views
 
 
 urlpatterns = [
-    path('', views.index),
+    path('', views.IndexView.as_view()),
     path('ping/', views.PingView),
     path('admin/', admin.site.urls),
 ]
