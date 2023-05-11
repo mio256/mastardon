@@ -1,1 +1,3 @@
 django
+Mastodon.py
+python-dotenv
