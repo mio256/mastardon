@@ -14,28 +14,27 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        page = int(self.request.GET.get('page', 5))
+        page = int(self.request.GET.get('page', 3))
+        mode = self.request.GET.get('mode', None)
         reb = int(self.request.GET.get('reb', 2))
         fav = int(self.request.GET.get('fav', 1))
-        en = bool(self.request.GET.get('en', False))
-        gpt = bool(self.request.GET.get('gpt', False))
 
         mastodon_timelines = mastodon_func.timelines(page)
 
-        if gpt:
+        if mode == 'gpt':
             id_list = chatgpt_func.analyze_toot(mastodon_timelines)
 
             timeline = []
-            for i in id_list:
-                for j in range(20*page):
-                    if i == mastodon_timelines[j].id:
-                        timeline.append(mastodon_timelines[j])
+            for i in range(20*page):
+                for id in id_list:
+                    if id == mastodon_timelines[i].id:
+                        timeline.append(mastodon_timelines[i])
             context['timeline'] = timeline
-        elif en:
-            context['timeline'] = sorted(mastodon_timelines,
-                                         key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav + len(re.findall('[a-z]+', x.content))))
+        elif mode == 'en':
+            context['timeline'] = sorted(mastodon_timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav + len(re.findall('[a-z]+', x.content))))
+        elif mode == 'sort':
+            context['timeline'] = sorted(mastodon_timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
         else:
-            context['timeline'] = sorted(mastodon_timelines,
-                                         key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
+            context['timeline'] = mastodon_timelines
 
         return context
