@@ -1,4 +1,5 @@
 import re
+import pprint
 from . import mastodon_func, chatgpt_func
 from django.http import JsonResponse
 from django.views.generic import TemplateView
@@ -22,13 +23,14 @@ class IndexView(TemplateView):
         mastodon_timelines = mastodon_func.timelines(page)
 
         if mode == 'gpt':
-            id_list = chatgpt_func.analyze_toot(mastodon_timelines)
+            id_list, gpt_response = chatgpt_func.analyze_toot(mastodon_timelines)
 
             timeline = []
-            for i in range(20*page):
+            for i in range(len(mastodon_timelines)):
                 for id in id_list:
                     if id == mastodon_timelines[i].id:
                         timeline.append(mastodon_timelines[i])
+            context['gpt_response'] = gpt_response
             context['timeline'] = timeline
         elif mode == 'en':
             context['timeline'] = sorted(mastodon_timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav + len(re.findall('[a-z]+', x.content))))
