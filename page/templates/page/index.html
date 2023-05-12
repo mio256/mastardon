@@ -23,7 +23,7 @@
                                      width="50px"
                                      height="50px">
                                 <br>
-                                <a href="{{ toot.account.url }}" class="card-link">{{ toot.account.display_name }} - {{ toot.created_at }}</a>
+                                <a href="{{ toot.account.url }}" class="card-link">{{ toot.account.display_name }} - {{ toot.created_at | date:"Y-m-j H:i:s" }}</a>
                                 {% autoescape off %}
                                     {{ toot.content }}
                                 {% endautoescape %}
