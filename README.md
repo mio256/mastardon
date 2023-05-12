@@ -1,6 +1,6 @@
 # mastardon
 
-![mio256](https://avatars.githubusercontent.com/u/71450182)
+![image](./image.png)
 
 ## Overview
 
