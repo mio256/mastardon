@@ -1,7 +1,6 @@
-import os
 from django.http import JsonResponse
 from django.views.generic import TemplateView
-from mastodon import Mastodon
+from . import mastodon_func
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -15,12 +14,6 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        mastodon = Mastodon(
-            os.environ['CLIENT_ID'],
-            os.environ['CLIENT_SECRET'],
-            os.environ['ACCESS_TOKEN'],
-            os.environ['API_BASE_URL'],
-        )
-        response = mastodon.timeline_home()
-        context['timeline'] = response
+        responses = mastodon_func.timelines(10)
+        context['timeline'] = sorted(responses, key=lambda x: -(x.reblogs_count * 2 + x.favourites_count))
         return context

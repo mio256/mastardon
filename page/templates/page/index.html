@@ -27,10 +27,30 @@
                                 {% autoescape off %}
                                     {{ toot.content }}
                                 {% endautoescape %}
-                                <p>
-                                    🔁:{{ toot.reblogs_count }}
-                                    ❤️:{{ toot.favourites_count }}
-                                </p>
+                                <div class="row">
+                                    <div class="col">
+                                        <p>
+                                            🔁:{{ toot.reblogs_count }}
+                                            ❤️:{{ toot.favourites_count }}
+                                        </p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a class="btn btn-primary"
+                                               href="{{ toot.url }}"
+                                               target="_blank"
+                                               rel="noopener noreferrer">view</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tweet_media">
+                                    {% for media in toot.media_attachments %}
+                                        <img src="{{ media.url }}"
+                                             alt="{{ media.blurhash }}"
+                                             width="30%"
+                                             height="auto">
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
