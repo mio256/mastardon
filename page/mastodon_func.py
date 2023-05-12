@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def timelines(n):
+def timelines(page: int = 5):
     mastodon = Mastodon(
         os.environ['CLIENT_ID'],
         os.environ['CLIENT_SECRET'],
@@ -14,7 +14,7 @@ def timelines(n):
 
     responses = []
     r = mastodon.timeline_home()
-    for i in range(n):
+    for _ in range(page):
         responses += r
         r = mastodon.timeline_home(max_id=r[-1].id)
     return responses
