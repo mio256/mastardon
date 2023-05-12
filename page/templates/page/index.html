@@ -15,23 +15,25 @@
         <div class="container">
             <div class="row justify-content-md-center">
                 <div class="col col-lg-7">
-                    {% comment %} {% for tweet in tweets %} {% endcomment %}
-                    <div class="card m-2">
-                        <div class="card-body">
-                            {% comment %} style="background-color: rgb(250, 250, 255);" {% endcomment %}
-                            <img src="https://http.cat/100" alt="icon" width="50px" height="50px">
-                            <br>
-                            {% comment %} <a href="{% url 'timeline:user' tweet.author_id %}" class="card-link">{{ tweet.name }} - {{ tweet.created_at }}</a> {% endcomment %}
-                            {% comment %} <p>{{ tweet.text | linebreaksbr }}</p> {% endcomment %}
-                            {% comment %} <p style="text-align: right;">
-                                ✨:{{ tweet.public_metrics.virtual_engagement }}%
-                                👀:{{ tweet.public_metrics.impression_count }}
-                                🔁:{{ tweet.public_metrics.retweet_count }}
-                                ❤️:{{ tweet.public_metrics.like_count }}
-                            </p> {% endcomment %}
+                    {% for toot in timeline %}
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <img src="{{ toot.account.avatar }}"
+                                     alt="{{ toot.account.username }}_icon"
+                                     width="50px"
+                                     height="50px">
+                                <br>
+                                <a href="{{ toot.account.url }}" class="card-link">{{ toot.account.display_name }} - {{ toot.created_at }}</a>
+                                {% autoescape off %}
+                                    {{ toot.content }}
+                                {% endautoescape %}
+                                <p>
+                                    🔁:{{ toot.reblogs_count }}
+                                    ❤️:{{ toot.favourites_count }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    {% comment %} {% endfor %} {% endcomment %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
