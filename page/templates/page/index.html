@@ -29,43 +29,87 @@
                         </div>
                     {% endif %}
                     {% for toot in timeline %}
-                        <div class="card m-2">
-                            <div class="card-body">
-                                <img src="{{ toot.account.avatar }}"
-                                     alt="{{ toot.account.username }}_icon"
-                                     width="50px"
-                                     height="50px">
-                                <br>
-                                <a href="{{ toot.account.url }}" class="card-link">{{ toot.account.display_name }} - {{ toot.created_at | date:"Y-m-j H:i:s" }}</a>
-                                {% autoescape off %}
-                                    {{ toot.content }}
-                                {% endautoescape %}
-                                <div class="row">
-                                    <div class="col">
-                                        <p>
-                                            🔁:{{ toot.reblogs_count }}
-                                            ❤️:{{ toot.favourites_count }}
-                                        </p>
-                                    </div>
-                                    <div class="col">
-                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                            <a class="btn btn-primary"
-                                               href="{{ toot.url }}"
-                                               target="_blank"
-                                               rel="noopener noreferrer">view</a>
+                        {% if toot.reblog %}
+                            <div class="card m-2">
+                                <div class="card-body">
+                                    <img src="{{ toot.reblog.account.avatar }}"
+                                         alt="{{ toot.reblog.account.username }}_icon"
+                                         width="50px"
+                                         height="50px">
+                                    <img src="{{ toot.account.avatar }}"
+                                         alt="{{ toot.account.username }}_icon"
+                                         width="25px"
+                                         height="25px">
+                                    <br>
+                                    <a href="{{ toot.account.url }}" class="card-link">{{ toot.reblog.account.display_name }} - {{ toot.reblog.created_at | date:"Y-m-j H:i:s" }}</a>
+                                    {% autoescape off %}
+                                        {{ toot.reblog.content }}
+                                    {% endautoescape %}
+                                    <div class="row">
+                                        <div class="col">
+                                            <p>
+                                                🔁:{{ toot.reblog.reblogs_count }}
+                                                ❤️:{{ toot.reblog.favourites_count }}
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <a class="btn btn-primary"
+                                                   href="{{ toot.reblog.url }}"
+                                                   target="_blank"
+                                                   rel="noopener noreferrer">view</a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="tweet_media">
-                                    {% for media in toot.media_attachments %}
-                                        <img src="{{ media.url }}"
-                                             alt="{{ media.blurhash }}"
-                                             width="30%"
-                                             height="auto">
-                                    {% endfor %}
+                                    <div class="tweet_media">
+                                        {% for media in toot.reblog.media_attachments %}
+                                            <img src="{{ media.url }}"
+                                                 alt="{{ media.blurhash }}"
+                                                 width="30%"
+                                                 height="auto">
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <div class="card m-2">
+                                <div class="card-body">
+                                    <img src="{{ toot.account.avatar }}"
+                                         alt="{{ toot.account.username }}_icon"
+                                         width="50px"
+                                         height="50px">
+                                    <br>
+                                    <a href="{{ toot.account.url }}" class="card-link">{{ toot.account.display_name }} - {{ toot.created_at | date:"Y-m-j H:i:s" }}</a>
+                                    {% autoescape off %}
+                                        {{ toot.content }}
+                                    {% endautoescape %}
+                                    <div class="row">
+                                        <div class="col">
+                                            <p>
+                                                🔁:{{ toot.reblogs_count }}
+                                                ❤️:{{ toot.favourites_count }}
+                                            </p>
+                                        </div>
+                                        <div class="col">
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <a class="btn btn-primary"
+                                                   href="{{ toot.url }}"
+                                                   target="_blank"
+                                                   rel="noopener noreferrer">view</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tweet_media">
+                                        {% for media in toot.media_attachments %}
+                                            <img src="{{ media.url }}"
+                                                 alt="{{ media.blurhash }}"
+                                                 width="30%"
+                                                 height="auto">
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
