@@ -15,37 +15,35 @@ class IndexView(TemplateView):
 
         if self.request.GET.get('hours'):
             hours = int(self.request.GET.get('hours'))
-            mastodon_timelines = mastodon_func.timelines_hours(hours)
+            timelines = mastodon_func.timelines_hours(hours)
         else:
             page = int(self.request.GET.get('page', 3))
-            mastodon_timelines = mastodon_func.timelines_page(page)
+            timelines = mastodon_func.timelines_page(page)
 
         mode = self.request.GET.get('mode')
-
-        if mode == 'gpt':
-            if self.request.GET.get('high'):
-                high = int(self.request.GET.get('high', 20))
-                reb = int(self.request.GET.get('reb', 2))
-                fav = int(self.request.GET.get('fav', 1))
-                mastodon_timelines = sorted(mastodon_timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
-                mastodon_timelines = mastodon_timelines[:high]
-            id_list, gpt_response = chatgpt_func.analyze_toot(mastodon_timelines)
-            timeline = []
-            for i in range(len(mastodon_timelines)):
-                for id in id_list:
-                    if id == mastodon_timelines[i].id:
-                        timeline.append(mastodon_timelines[i])
-            context['gpt_response'] = gpt_response
-            context['timeline'] = timeline
-        elif mode == 'sort':
+        if mode == None:
+            context['timeline'] = timelines
+        elif mode == "sort":
             reb = int(self.request.GET.get('reb', 2))
             fav = int(self.request.GET.get('fav', 1))
-            mastodon_timelines = sorted(mastodon_timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
+            timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
             if self.request.GET.get('high'):
-                high = int(self.request.GET.get('high', 20))
-                mastodon_timelines = mastodon_timelines[:high]
-            context['timeline'] = mastodon_timelines
-        else:
-            context['timeline'] = mastodon_timelines
+                high = int(self.request.GET.get('high'))
+                timelines = timelines[:high]
+            context['timeline'] = timelines
+        elif mode == 'gpt':
+            if self.request.GET.get('high'):
+                reb = int(self.request.GET.get('reb', 2))
+                fav = int(self.request.GET.get('fav', 1))
+                high = int(self.request.GET.get('high'))
+                timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
+                timelines = timelines[:high]
+            id_list, gpt_response = chatgpt_func.analyze_toot(timelines)
+            gpt_timelines = []
+            for toot in timelines:
+                if toot.id in id_list:
+                    gpt_timelines.append(toot)
+            context['gpt_response'] = gpt_response
+            context['timeline'] = gpt_timelines
 
         return context
