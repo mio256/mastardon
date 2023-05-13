@@ -21,9 +21,7 @@ class IndexView(TemplateView):
             timelines = mastodon_func.timelines_page(page)
 
         mode = self.request.GET.get('mode')
-        if mode == None:
-            context['timeline'] = timelines
-        elif mode == "sort":
+        if mode == "sort":
             reb = int(self.request.GET.get('reb', 2))
             fav = int(self.request.GET.get('fav', 1))
             timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
@@ -45,5 +43,7 @@ class IndexView(TemplateView):
                     gpt_timelines.append(toot)
             context['gpt_response'] = gpt_response
             context['timeline'] = gpt_timelines
+        else:
+            context['timeline'] = timelines
 
         return context
