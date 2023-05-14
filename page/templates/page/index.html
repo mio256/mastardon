@@ -68,10 +68,16 @@
                                     </div>
                                     <div class="tweet_media">
                                         {% for media in toot.reblog.media_attachments %}
-                                            <img src="{{ media.url }}"
-                                                 alt="{{ media.blurhash }}"
-                                                 width="30%"
-                                                 height="auto">
+                                            {% if media.type == 'image' %}
+                                                <img src="{{ media.url }}"
+                                                     alt="{{ media.blurhash }}"
+                                                     width="30%"
+                                                     height="auto">
+                                            {% elif media.type == 'video' %}
+                                                <video controls width="250">
+                                                    <source src="{{ media.url }}" type="video/mp4">
+                                                </video>
+                                            {% endif %}
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -106,10 +112,16 @@
                                     </div>
                                     <div class="tweet_media">
                                         {% for media in toot.media_attachments %}
-                                            <img src="{{ media.url }}"
-                                                 alt="{{ media.blurhash }}"
-                                                 width="30%"
-                                                 height="auto">
+                                            {% if media.type == 'image' %}
+                                                <img src="{{ media.url }}"
+                                                     alt="{{ media.blurhash }}"
+                                                     width="30%"
+                                                     height="auto">
+                                            {% elif media.type == 'video' %}
+                                                <video controls width="250">
+                                                    <source src="{{ media.url }}" type="video/mp4">
+                                                </video>
+                                            {% endif %}
                                         {% endfor %}
                                     </div>
                                 </div>
