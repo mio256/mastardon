@@ -1,9 +1,9 @@
-from . import mastodon_func, chatgpt_func
 from django.http import JsonResponse
 from django.views.generic import TemplateView
+from . import mastodon_func, chatgpt_func
 
 
-def PingView(request):
+def ping_view(request):
     return JsonResponse({'result': True})
 
 
@@ -12,38 +12,41 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        timelines = self.get_timelines()
+        mode = self.request.GET.get('mode')
 
+        if mode == "sort":
+            timelines = self.sort_timelines(timelines)
+        elif mode == 'gpt':
+            timelines, gpt_response = self.analyze_timelines_with_gpt(timelines)
+            context['gpt_response'] = gpt_response
+
+        context['timeline'] = timelines
+        return context
+
+    def get_timelines(self) -> list:
         if self.request.GET.get('hours'):
             hours = int(self.request.GET.get('hours'))
-            timelines = mastodon_func.timelines_hours(hours)
+            return mastodon_func.timelines_hours(hours)
         else:
             page = int(self.request.GET.get('page', 3))
-            timelines = mastodon_func.timelines_page(page)
+            return mastodon_func.timelines_page(page)
 
-        mode = self.request.GET.get('mode')
-        if mode == "sort":
-            reb = int(self.request.GET.get('reb', 2))
-            fav = int(self.request.GET.get('fav', 1))
-            timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
-            if self.request.GET.get('high'):
-                high = int(self.request.GET.get('high'))
-                timelines = timelines[:high]
-            context['timeline'] = timelines
-        elif mode == 'gpt':
-            if self.request.GET.get('high'):
-                reb = int(self.request.GET.get('reb', 2))
-                fav = int(self.request.GET.get('fav', 1))
-                high = int(self.request.GET.get('high'))
-                timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
-                timelines = timelines[:high]
-            id_list, gpt_response = chatgpt_func.analyze_toot(timelines)
-            gpt_timelines = []
-            for toot in timelines:
-                if toot.id in id_list:
-                    gpt_timelines.append(toot)
-            context['gpt_response'] = gpt_response
-            context['timeline'] = gpt_timelines
-        else:
-            context['timeline'] = timelines
+    def sort_timelines(self, timelines: list) -> list:
+        reb = int(self.request.GET.get('reb', 2))
+        fav = int(self.request.GET.get('fav', 1))
+        sorted_timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
+        if self.request.GET.get('high'):
+            high = int(self.request.GET.get('high'))
+            return sorted_timelines[:high]
+        return sorted_timelines
 
-        return context
+    def analyze_timelines_with_gpt(self, timelines: list) -> tuple[list, list]:
+        reb = int(self.request.GET.get('reb', 2))
+        fav = int(self.request.GET.get('fav', 1))
+        high = int(self.request.GET.get('high', 50))
+        sorted_timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
+        trimmed_timelines = sorted_timelines[:high]
+        id_list, gpt_response = chatgpt_func.analyze_toot(trimmed_timelines)
+        gpt_timelines = [toot for toot in trimmed_timelines if toot.id in id_list]
+        return gpt_timelines, gpt_response
