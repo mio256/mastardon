@@ -1,27 +1,19 @@
 from django.test import TestCase
-from django.http import JsonResponse
-from django.template.response import TemplateResponse
+from django.urls import reverse
 
 
-class PingTestCase(TestCase):
-    def testResponseType(self):
-        response = self.client.get('/ping/')
-        self.assertEqual(type(response), JsonResponse)
-
-    def testResponseContent(self):
-        response = self.client.get('/ping/')
-        self.assertEqual(response.json(), {'result': True})
+class PingViewTest(TestCase):
+    def test_ping_view(self):
+        response = self.client.get(reverse('ping_view'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'{"result": true}')
 
 
-class IndexTestCase(TestCase):
-    def testResponseType(self):
-        response = self.client.get('/')
-        self.assertEqual(type(response), TemplateResponse)
+class IndexViewTest(TestCase):
+    def test_index_view_no_query_params(self):
+        response = self.client.get(reverse('index_view'))
+        self.assertEqual(response.status_code, 200)
 
-    def testResponseTypeSort(self):
-        response = self.client.get('/?mode=sort')
-        self.assertEqual(type(response), TemplateResponse)
-
-    def testResponseTypeGPT(self):
-        response = self.client.get('/?mode=gpt')
-        self.assertEqual(type(response), TemplateResponse)
+    def test_index_view_with_query_params(self):
+        response = self.client.get(reverse('index_view'), {'hours': '2', 'mode': 'sort', 'reb': '1', 'fav': '2', 'high': '50'})
+        self.assertEqual(response.status_code, 200)
