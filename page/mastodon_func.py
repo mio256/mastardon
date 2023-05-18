@@ -1,7 +1,8 @@
 import os
 import datetime
-from mastodon import Mastodon
+from mastodon import Mastodon, utility
 from dotenv import load_dotenv
+
 load_dotenv()
 
 mastodon = Mastodon(
@@ -12,23 +13,25 @@ mastodon = Mastodon(
 )
 
 
-def timelines_page(page: int):
+def fetch_timeline(max_id: int = None) -> utility.AttribAccessList:
+    return mastodon.timeline_home(max_id=max_id)
+
+
+def timelines_page(page: int) -> list:
     responses = []
-    r = mastodon.timeline_home()
+    r = fetch_timeline()
     for _ in range(page):
         responses += r
-        r = mastodon.timeline_home(max_id=r[-1].id)
+        r = fetch_timeline(max_id=r[-1].id)
     return responses
 
 
-def timelines_hours(hours: int):
+def timelines_hours(hours: int) -> list:
     d = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
     responses = []
-
-    r = mastodon.timeline_home()
+    r = fetch_timeline()
     responses += r
     while r[-1].created_at > d:
-        r = mastodon.timeline_home(max_id=r[-1].id)
+        r = fetch_timeline(max_id=r[-1].id)
         responses += r
-
     return responses
