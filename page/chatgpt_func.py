@@ -7,6 +7,13 @@ load_dotenv()
 openai.api_key = os.environ['OPENAI_API_KEY']
 
 
+def request_chatgpt(messages: list):
+    return openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+    )
+
+
 def analyze_toots(mastodon_timelines: list) -> tuple[list[int], str]:
     """
     Analyzes toots using GPT-3.5-turbo and returns a list of relevant toot IDs and GPT-3's response.
@@ -16,8 +23,7 @@ def analyze_toots(mastodon_timelines: list) -> tuple[list[int], str]:
     """
     message_content = ''.join([f"id={toot.id} - {re.sub(re.compile('<.*?>'), '', toot.content)}\n" for toot in mastodon_timelines])
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+    response = request_chatgpt(
         messages=[
             {"role": "user", "content": message_content},
             {
