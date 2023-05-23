@@ -15,12 +15,6 @@ def request_chatgpt(messages: list):
 
 
 def analyze_toots(mastodon_timelines: list) -> tuple[list[int], str]:
-    """
-    Analyzes toots using GPT-3.5-turbo and returns a list of relevant toot IDs and GPT-3's response.
-
-    :param mastodon_timelines: A list of Mastodon timeline objects.
-    :return: A tuple containing a list of relevant toot IDs and GPT-3's response.
-    """
     message_content = ''.join([f"id={toot.id} - {re.sub(re.compile('<.*?>'), '', toot.content)}\n" for toot in mastodon_timelines])
 
     response = request_chatgpt(
@@ -28,7 +22,14 @@ def analyze_toots(mastodon_timelines: list) -> tuple[list[int], str]:
             {"role": "user", "content": message_content},
             {
                 "role": "system",
-                "content": "Pull out sentences about programming from these. You need to use this format for response. `{id}, {id}, {id}, {id}, {id}`",
+                "content": """
+                    You are a professional analyst.
+                    Please output `id list of statements about programming` based on the following constraints and input statements.
+                    # Constraints
+                     - Output no more than 20 IDs.
+                     - Use this format for output : `{id}, {id}, {id}, {id}, {id}`
+                    I'll send you the input data.
+                """,
             },
         ]
     )["choices"][0]["message"]["content"]
