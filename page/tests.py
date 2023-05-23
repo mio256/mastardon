@@ -29,6 +29,11 @@ class IndexViewTest(TestCase):
 class MastodonFuncTest(TestCase):
     def setUp(self):
         self.response = mastodon_func.fetch_timeline()
+        self.me = mastodon_func.fetch_me()
+
+    def test_fetch_me(self):
+        self.assertIsInstance(self.me, utility.AttribAccessList)
+        self.assertIsInstance(self.me.id, str)
 
     def test_fetch_timeline_response(self):
         self.assertIsInstance(self.response, utility.AttribAccessList)
@@ -44,6 +49,10 @@ class MastodonFuncTest(TestCase):
         self.assertIsInstance(response, list)
         d = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=TIMELINE_HOURS)
         self.assertLessEqual(response[-1].created_at, d)
+
+    def test_timeline_last_response(self):
+        response = mastodon_func.timelines_last(self.me.id)
+        self.assertIsInstance(response, list)
 
 
 class ChatGPTFuncTest(TestCase):
