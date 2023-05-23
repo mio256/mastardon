@@ -12,25 +12,27 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         timelines = self.get_timelines()
         mode = self.request.GET.get('mode')
-
         if mode == "sort":
             timelines = self.sort_timelines(timelines)
         elif mode == 'gpt':
             timelines, gpt_response = self.analyze_timelines_with_gpt(timelines)
             context['gpt_response'] = gpt_response
-
         context['timeline'] = timelines
+
         return context
 
     def get_timelines(self) -> list:
-        if self.request.GET.get('hours'):
+        if self.request.GET.get('page'):
+            page = int(self.request.GET.get('page', 3))
+            return mastodon_func.timelines_page(page)
+        elif self.request.GET.get('hours'):
             hours = int(self.request.GET.get('hours'))
             return mastodon_func.timelines_hours(hours)
         else:
-            page = int(self.request.GET.get('page', 3))
-            return mastodon_func.timelines_page(page)
+            return mastodon_func.timelines_last(mastodon_func.fetch_me().id)
 
     def sort_timelines(self, timelines: list) -> list:
         reb = int(self.request.GET.get('reb', 2))
