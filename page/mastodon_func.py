@@ -12,6 +12,8 @@ mastodon = Mastodon(
     os.environ['API_BASE_URL'],
 )
 
+MAX_PAGE = 50
+
 
 def fetch_me() -> utility.AttribAccessList:
     return mastodon.me()
@@ -38,4 +40,15 @@ def timelines_hours(hours: int) -> list:
     while r[-1].created_at > d:
         r = fetch_timeline(max_id=r[-1].id)
         responses += r
+    return responses
+
+
+def timelines_last(id: str) -> list:
+    responses = []
+    r = fetch_timeline()
+    for _ in range(MAX_PAGE):
+        responses += r
+        if id in [i.account.id for i in r]:
+            break
+        r = fetch_timeline(max_id=r[-1].id)
     return responses
