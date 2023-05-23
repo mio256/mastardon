@@ -38,7 +38,7 @@ class MastodonFuncTest(TestCase):
     def test_timelines_page_response(self):
         response = mastodon_func.timelines_page(TIMELINE_PAGE)
         self.assertIsInstance(response, list)
-        self.assertEqual(len(response), RESPONSE_LENGTH)
+        self.assertEqual(len(response), RESPONSE_LENGTH * TIMELINE_PAGE)
 
     def test_timeline_hours_response(self):
         response = mastodon_func.timelines_hours(TIMELINE_HOURS)
