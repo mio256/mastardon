@@ -1,13 +1,12 @@
 import datetime
-import random
 from mastodon import utility
 from django.test import TestCase
 from django.urls import reverse
 from . import chatgpt_func, mastodon_func
 
 RESPONSE_LENGTH = 20
-TIMELINE_PAGE = random.randrange(5) + 1
-TIMELINE_HOURS = random.randrange(5) + 1
+TIMELINE_PAGE = 3
+TIMELINE_HOURS = 3
 
 
 class PingViewTest(TestCase):
