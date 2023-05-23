@@ -13,6 +13,10 @@ mastodon = Mastodon(
 )
 
 
+def fetch_me() -> utility.AttribAccessList:
+    return mastodon.me()
+
+
 def fetch_timeline(max_id: int = None) -> utility.AttribAccessList:
     return mastodon.timeline_home(max_id=max_id)
 
