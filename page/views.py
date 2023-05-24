@@ -44,11 +44,7 @@ class IndexView(TemplateView):
         return sorted_timelines
 
     def analyze_timelines_with_gpt(self, timelines: list) -> tuple[list, str]:
-        reb = int(self.request.GET.get('reb', 2))
-        fav = int(self.request.GET.get('fav', 1))
-        high = int(self.request.GET.get('high', 50))
-        sorted_timelines = sorted(timelines, key=lambda x: -(x.reblogs_count * reb + x.favourites_count * fav))
-        trimmed_timelines = sorted_timelines[:high]
-        id_list, gpt_response = chatgpt_func.analyze_toots(trimmed_timelines)
-        gpt_timelines = [toot for toot in trimmed_timelines if toot.id in id_list]
+        sorted_timelines = self.sort_timelines(timelines)
+        id_list, gpt_response = chatgpt_func.analyze_toots(sorted_timelines)
+        gpt_timelines = [toot for toot in sorted_timelines if toot.id in id_list]
         return gpt_timelines, gpt_response
