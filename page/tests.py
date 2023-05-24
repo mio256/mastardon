@@ -32,8 +32,8 @@ class MastodonFuncTest(TestCase):
         self.me = mastodon_func.fetch_me()
 
     def test_fetch_me(self):
-        self.assertIsInstance(self.me, utility.AttribAccessList)
-        self.assertIsInstance(self.me.id, str)
+        self.assertIsInstance(self.me, utility.AttribAccessDict)
+        self.assertIsInstance(self.me.id, int)
 
     def test_fetch_timeline_response(self):
         self.assertIsInstance(self.response, utility.AttribAccessList)
