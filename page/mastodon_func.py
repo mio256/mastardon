@@ -20,7 +20,11 @@ def fetch_me() -> utility.AttribAccessList:
 
 
 def fetch_timeline(max_id: int = None) -> utility.AttribAccessList:
-    return mastodon.timeline_home(max_id=max_id)
+    r = mastodon.timeline_home(max_id=max_id)
+    for i, t in enumerate(r):
+        r[i]['global_url'] = f'https://mstdn.jp/@{t.account.acct}/{t.id}'
+        r[i]['account']['global_url'] = f'https://mstdn.jp/@{t.account.acct}'
+    return r
 
 
 def timelines_page(page: int) -> list:
