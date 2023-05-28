@@ -19,6 +19,10 @@ def fetch_me() -> utility.AttribAccessList:
     return mastodon.me()
 
 
+def toot(text: str) -> None:
+    mastodon.toot(text)
+
+
 def fetch_timeline(max_id: int = None) -> utility.AttribAccessList:
     r = mastodon.timeline_home(max_id=max_id)
     for i, t in enumerate(r):

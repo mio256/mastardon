@@ -19,6 +19,17 @@
                         <a class="btn btn-primary" href="?mode=sort">Sort</a>
                         <a class="btn btn-secondary" href="?mode=normal">Normal</a>
                         <a class="btn btn-success" href="?mode=gpt">ChatGPT</a>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row m-2 g-2 align-items-center">
+                                <div class="col-auto">
+                                    <input class="form-control" type="text" name="toot_text">
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-outline-primary">toot</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     {% if gpt_response %}
                         <div class="card m-2">
