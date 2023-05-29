@@ -49,7 +49,7 @@ class IndexView(TemplateView):
         return sorted_timelines
 
     def analyze_timelines_with_gpt(self, timelines: list) -> tuple[list, str]:
-        sorted_timelines = self.sort_timelines(timelines)
+        sorted_timelines = self.sort_timelines(timelines)[:50]
         id_list, gpt_response = chatgpt_func.analyze_toots(sorted_timelines)
         gpt_timelines = [toot for toot in sorted_timelines if toot.id in id_list]
         return gpt_timelines, gpt_response
